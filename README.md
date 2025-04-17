@@ -40,11 +40,13 @@ git clone https://github.com/steveroe317/humidity-monitor.git
 cd humidity-monitor
 python -m venv env
 source env/bin/activate
+python -p pip install wheel
 python -m pip install adafruit-circuitpython-dht
+python -m pip install --upgrade firebase-admin
 ```
 
 Set up the log directory, replacing "username"
-with the login that will run the trailer warmer app.
+with the login that will run the humidity monitor app.
 
 ```
 sudo mkdir /var/log/humidity-monitor
@@ -92,9 +94,9 @@ Installing the app as a system service allows it to restart after errors
 or after a reboot (such as after a power outage). Follow these steps to
 install it as a system service.
 
-Modify the repo's trailer-warmer.service file for your enviroment.
+Modify the repo's humidity-monitor.service file for your enviroment.
 
-* Change the WorkingDirectory entry to the trailer-warmer repo root
+* Change the WorkingDirectory entry to the humidity-monitor repo root
 * Change the ExecStart entry to env/bin/python within the repo root
 * Change User entry from steveroe to the login that will run the app
 * Change Group entry from steveroe to the login that will run the app

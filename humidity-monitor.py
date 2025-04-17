@@ -10,10 +10,14 @@ import adafruit_dht  # type: ignore
 import board  # type: ignore
 import datetime
 import digitalio  # type: ignore
+import firebase_admin  # type: ignore
 import os
 import time
 import shutil
 import sys
+
+from firebase_admin import credentials
+from firebase_admin import firestore
 
 sample_period_s = 60.0
 
@@ -32,6 +36,12 @@ def rotate_logs(log_name: str) -> None:
         if os.path.isfile(log_names[index]):
             shutil.move(log_names[index], log_names[index + 1])
 
+
+# Set up access to Google Firestore database.
+cred = credentials.Cetificate("secrets/humidity-monitor-service-account.json")
+app = firebase_admin.initialize_app(cred)
+db = firestore.client()
+doc_ref = db.collection("501").document("basement")
 
 # Set up interface for temperature sensor.
 dht_device = adafruit_dht.DHT22(board.D24)
@@ -62,10 +72,13 @@ while True:
         # Log the current sensor readings and heater state.
         now = datetime.datetime.now()
         timestamp = now.strftime("%Y/%m/%d %H:%M:%S")
-        message = f"{timestamp},{temperature_f},{humidity}\n"
+        message = f"time:{timestamp},temp:{temperature_f},rh:{humidity}\n"
         print(message, end="")
         with open(log_name, "a") as f:
             f.write(message)
+
+        # Log the data to firestore database.
+        doc_ref.set({"time": timestamp, "temp": temperature_f, "rh": humidity})
 
     except RuntimeError as err:
         print(err.args[0])
