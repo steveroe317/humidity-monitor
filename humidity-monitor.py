@@ -38,7 +38,7 @@ def rotate_logs(log_name: str) -> None:
 
 
 # Set up access to Google Firestore database.
-cred = credentials.Cetificate("secrets/humidity-monitor-service-account.json")
+cred = credentials.Certificate("secrets/humidity-monitor-service-account.json")
 app = firebase_admin.initialize_app(cred)
 db = firestore.client()
 doc_ref = db.collection("501").document("basement")
