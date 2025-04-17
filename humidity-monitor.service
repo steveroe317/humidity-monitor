@@ -1,0 +1,14 @@
+[Unit]
+Description=Tries to keep trailer above freezing
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/steveroe/trailer-warmer
+ExecStart=/home/steveroe/trailer-warmer/env/bin/python3 humidity-monitor.py
+User=steveroe
+Group=steveroe
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
