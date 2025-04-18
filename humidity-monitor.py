@@ -78,7 +78,7 @@ while True:
             f.write(message)
 
         # Log the data to firestore database.
-        data = {now: {"t": temperature_f, "rh": humidity}}
+        data = {timestamp: {"t": temperature_f, "rh": humidity}}
         doc_ref.set(data, merge=True)
 
     except RuntimeError as err:
