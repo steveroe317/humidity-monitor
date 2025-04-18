@@ -19,7 +19,7 @@ import sys
 from firebase_admin import credentials
 from firebase_admin import firestore
 
-sample_period_s = 60.0
+sample_period_s = 300.0
 
 log_name = "/var/log/humidity-monitor/humidity.log"
 log_size_limit = 1_000_000
