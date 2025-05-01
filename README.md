@@ -40,7 +40,7 @@ git clone https://github.com/steveroe317/humidity-monitor.git
 cd humidity-monitor
 python -m venv env
 source env/bin/activate
-python -p pip install wheel
+python -m pip install wheel
 python -m pip install adafruit-circuitpython-dht
 python -m pip install --upgrade firebase-admin
 ```
