@@ -53,6 +53,19 @@ sudo mkdir /var/log/humidity-monitor
 sudo chown username:username /var/log/humidity-monitor/
 ```
 
+Create a firestore database for the log info. See Google's
+[Get Started with Cloud Firestore](https://firebase.google.com/docs/firestore/quickstart)
+document for more info.
+
+Create a .json service account file enabling writes to the database.
+See the "Initialize on your own server" section of Google's
+[Initialize Could Firestore](https://firebase.google.com/docs/firestore/quickstart#initialize)
+Firestore quickstart guide for more info.
+
+Create a "secrets" subdirectory in the humidity-monitor root directory.
+
+Copy the .json service account file to the secrets subdirectory.
+
 # Running the App
 
 The app runs inside a python virtual environment.
