@@ -19,15 +19,31 @@ import sys
 from firebase_admin import credentials
 from firebase_admin import firestore
 
-# Firebase document path
-app_site = 'test_site'
-app_location = 'test_location'
 
+# Take a humidty and temperature measurement every 5 minutes.
+# The sampling period must be long enough that a month's
+# worth of firestore data us uner 1 megabyte.
 sample_period_s = 300.0
 
+# On-server log location and rotation specifications.
 log_name = "/var/log/humidity-monitor/humidity.log"
 log_size_limit = 1_000_000
 log_rotate_count = 4
+
+# Firestore service account key and document path.
+app_service_key_path = os.getenv('APP_SERVICE_KEY_PATH')
+app_site = os.getenv('APP_SITE', 'test_site')
+app_location = os.getenv('APP_LOCATION', 'test_location')
+app_location_month = ''
+
+# Set up access to Google Firestore database.
+cred = credentials.Certificate("secrets/humidity-monitor-service-account.json")
+app = firebase_admin.initialize_app(cred)
+db = firestore.client()
+doc_ref = None
+
+# Set up interface for temperature sensor.
+dht_device = adafruit_dht.DHT22(board.D24)
 
 
 def rotate_logs(log_name: str) -> None:
@@ -40,15 +56,6 @@ def rotate_logs(log_name: str) -> None:
         if os.path.isfile(log_names[index]):
             shutil.move(log_names[index], log_names[index + 1])
 
-
-# Set up access to Google Firestore database.
-cred = credentials.Certificate("secrets/humidity-monitor-service-account.json")
-app = firebase_admin.initialize_app(cred)
-db = firestore.client()
-doc_ref = db.collection(app_site).document(app_location)
-
-# Set up interface for temperature sensor.
-dht_device = adafruit_dht.DHT22(board.D24)
 
 
 while True:
@@ -81,9 +88,15 @@ while True:
         with open(log_name, "a") as f:
             f.write(message)
 
-        # Log the data to firestore database.
+        # Log the data to firestore database.  Use a separate document for each
+        # month to stay under firestore's 1 megabyte document size limit.
+        location_month = f'{app_location}-{now.strftime("%Y-%m")}'
+        if app_location_month != location_month:
+            app_location_month = location_month
+            doc_ref = db.collection(app_site).document(app_location_month)
         data = {timestamp: {"t": temperature_f, "rh": humidity}}
-        doc_ref.set(data, merge=True)
+        if doc_ref:
+            doc_ref.set(data, merge=True)
 
     except RuntimeError as err:
         print(err.args[0])
