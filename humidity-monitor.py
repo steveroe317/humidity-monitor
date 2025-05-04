@@ -19,6 +19,10 @@ import sys
 from firebase_admin import credentials
 from firebase_admin import firestore
 
+# Firebase document path
+app_site = 'test_site'
+app_location = 'test_location'
+
 sample_period_s = 300.0
 
 log_name = "/var/log/humidity-monitor/humidity.log"
@@ -41,7 +45,7 @@ def rotate_logs(log_name: str) -> None:
 cred = credentials.Certificate("secrets/humidity-monitor-service-account.json")
 app = firebase_admin.initialize_app(cred)
 db = firestore.client()
-doc_ref = db.collection("501").document("basement")
+doc_ref = db.collection(app_site).document(app_location)
 
 # Set up interface for temperature sensor.
 dht_device = adafruit_dht.DHT22(board.D24)
