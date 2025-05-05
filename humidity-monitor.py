@@ -31,7 +31,7 @@ log_size_limit = 1_000_000
 log_rotate_count = 4
 
 # Firestore service account key and document path.
-app_service_key_path = os.getenv('APP_SERVICE_KEY_PATH')
+app_service_key_path = os.getenv('APP_SERVICE_KEY')
 app_site = os.getenv('APP_SITE', 'test_site')
 app_location = os.getenv('APP_LOCATION', 'test_location')
 app_location_month = ''

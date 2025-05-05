@@ -1,5 +1,6 @@
 This project implements a logging humidty monitor using a Raspberry Pi, a
-temperature/humity sensor, a WiFi connection, and a Google FireStore database.
+temperature/humity sensor, a WiFi connection, and an optional Google
+FireStore database.
 It is meant to automatically monitor humidity in basement, attic, or
 outbuilding. 
 
@@ -8,7 +9,7 @@ service that restarts on failure or reboot.
 
 # UNDER CONSTRUCTION
 
-This project is in initial development and may not work.
+This README file is under construction. It may not be complete.
 
 # Materials
 
@@ -52,6 +53,11 @@ with the login that will run the humidity monitor app.
 sudo mkdir /var/log/humidity-monitor
 sudo chown username:username /var/log/humidity-monitor/
 ```
+
+# Google Firestore setup
+
+Setting up a Google Firestore database is not required for monitoring humidity
+but enables reading humidity logs from a remote location,
 
 Create a firestore database for the log info. See Google's
 [Get Started with Cloud Firestore](https://firebase.google.com/docs/firestore/quickstart)
@@ -111,8 +117,24 @@ Modify the repo's humidity-monitor.service file for your enviroment.
 
 * Change the WorkingDirectory entry to the humidity-monitor repo root
 * Change the ExecStart entry to env/bin/python within the repo root
-* Change User entry from steveroe to the login that will run the app
-* Change Group entry from steveroe to the login that will run the app
+* Change User entry from username to the login that will run the app
+* Change Group entry from usernamm to the login that will run the app
+
+If not logging data to a Firestore database
+
+* Remove the APP_SERVICE_KEY line.
+
+If logging data to a Firestore database
+
+* Change the environment APP_SERVICE_KEY variable to the path the the service
+account key json file stored under the repo root in the secrets subdirectory.
+For example
+`/home/username/humidity-monitor/secrets/humidity-monitor-service-account.json`
+* Change the environment APP_SITE variable to a name for the site at which the
+humidity monitor will be installed. This could be a building address or name.
+* Change the environment APP_LOCATION variable to a name for the location at
+the site where the humidity monitor will be installed. This could be a room
+number or name.
 
 Copy the modified humidity-monitor.service file to systemctl's service
 directory
