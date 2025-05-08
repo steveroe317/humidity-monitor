@@ -8,7 +8,7 @@ WorkingDirectory=/home/username/humidity-monitor
 ExecStart=/home/username/humidity-monitor/env/bin/python3 humidity-monitor.py
 User=username
 Group=username
-Environment=APP_SERVICE_KEY=/home/username/humidity-monitor/secrets/secrets/humidity-monitor-service-account.json
+Environment=APP_SERVICE_KEY=/home/username/humidity-monitor/secrets/humidity-monitor-service-account.json
 Environment=APP_SITE=site
 Environment=APP_LOCATION=location
 Restart=on-failure
