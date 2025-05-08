@@ -27,6 +27,8 @@ Jumper wires such as
 
 # Setup
 
+This setup has been tested on a Raspberry Pi 4 running Bookworm.
+
 Connect the hardware components.
 
 DHT22 AM2302 temperature/humidity sensor
@@ -42,6 +44,7 @@ cd humidity-monitor
 python -m venv env
 source env/bin/activate
 python -m pip install wheel
+python -m pip install RPi.GPIO
 python -m pip install adafruit-circuitpython-dht
 python -m pip install --upgrade firebase-admin
 ```
@@ -91,7 +94,7 @@ source env/bin/activate
 At the root directory of the humidity-monitor repo, run
 
 ```
-.humidity-monitor.py
+./humidity-monitor.py
 ```
 
 The app will start emitting log messages like
@@ -113,7 +116,7 @@ Installing the app as a system service allows it to restart after errors
 or after a reboot (such as after a power outage). Follow these steps to
 install it as a system service.
 
-Modify the repo's humidity-monitor.service file for your enviroment.
+Modify the repo's humidity-monitor.service file for your environment.
 
 * Change the WorkingDirectory entry to the humidity-monitor repo root
 * Change the ExecStart entry to env/bin/python within the repo root
