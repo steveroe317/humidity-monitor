@@ -27,7 +27,8 @@ Jumper wires such as
 
 # Setup
 
-This setup has been tested on a Raspberry Pi 4 running Bookworm.
+This setup has been tested on a Raspberry Pi 4B and a Raspberry Pi Zero 2 W
+running Bookworm.
 
 Connect the hardware components.
 
@@ -36,7 +37,8 @@ DHT22 AM2302 temperature/humidity sensor
 * Connect the Raspberry Pi pin 18 (GPIO24) to the DHT22 AM2302 "out" terminal
 * Connect the Raspberry Pi pin 17 (3.3V) to the DHT22 AM2302 "+" terminal
 
-Clone the humidity monitor repository and set up a virtual environment.
+Clone the humidity monitor repository and set up a virtual environment. The
+firestore-admin install is required even if firestore will not be used.
 
 ```
 git clone https://github.com/steveroe317/humidity-monitor.git
@@ -58,6 +60,8 @@ sudo chown username:username /var/log/humidity-monitor/
 ```
 
 # Google Firestore setup
+
+If not logging to firestore this can be skipped.
 
 Setting up a Google Firestore database is not required for monitoring humidity
 but enables reading humidity logs from a remote location,
