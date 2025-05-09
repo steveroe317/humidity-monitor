@@ -31,16 +31,19 @@ log_size_limit = 1_000_000
 log_rotate_count = 4
 
 # Firestore service account key and document path.
-app_service_key_path = os.getenv('APP_SERVICE_KEY')
-app_site = os.getenv('APP_SITE', 'test_site')
-app_location = os.getenv('APP_LOCATION', 'test_location')
-app_location_month = ''
+app_service_key_path = os.getenv("APP_SERVICE_KEY")
+app_site = os.getenv("APP_SITE", "test_site")
+app_location = os.getenv("APP_LOCATION", "test_location")
+app_location_month = ""
 
-# Set up access to Google Firestore database.
-cred = credentials.Certificate("secrets/humidity-monitor-service-account.json")
-app = firebase_admin.initialize_app(cred)
-db = firestore.client()
-doc_ref = None
+# Set up optional access to Google Firestore database.
+if not app_service_key_path:
+    firestore_db = None
+else:
+    cred = credentials.Certificate(app_service_key_path)
+    app = firebase_admin.initialize_app(cred)
+    firestore_db = firestore.client()
+firestore_doc_ref = None
 
 # Set up interface for temperature sensor.
 dht_device = adafruit_dht.DHT22(board.D24)
@@ -55,7 +58,6 @@ def rotate_logs(log_name: str) -> None:
     for index in reversed(range(log_rotate_count - 1)):
         if os.path.isfile(log_names[index]):
             shutil.move(log_names[index], log_names[index + 1])
-
 
 
 while True:
@@ -88,15 +90,19 @@ while True:
         with open(log_name, "a") as f:
             f.write(message)
 
-        # Log the data to firestore database.  Use a separate document for each
-        # month to stay under firestore's 1 megabyte document size limit.
-        location_month = f'{app_location}-{now.strftime("%Y-%m")}'
-        if app_location_month != location_month:
-            app_location_month = location_month
-            doc_ref = db.collection(app_site).document(app_location_month)
-        data = {timestamp: {"t": temperature_f, "rh": humidity}}
-        if doc_ref:
-            doc_ref.set(data, merge=True)
+        # Optionally log data to the firestire database.
+        if firestore_db is not None:
+            # Use a separate document for each month to stay under firestore's
+            # 1 megabyte document size limit.
+            location_month = f'{app_location}-{now.strftime("%Y-%m")}'
+            if app_location_month != location_month:
+                app_location_month = location_month
+                firestore_doc_ref = firestore_db.collection(app_site).document(
+                    app_location_month
+                )
+            if firestore_doc_ref:
+                data = {timestamp: {"t": temperature_f, "rh": humidity}}
+                firestore_doc_ref.set(data, merge=True)
 
     except RuntimeError as err:
         print(err.args[0])
