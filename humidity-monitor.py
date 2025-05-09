@@ -100,7 +100,7 @@ while True:
                 firestore_doc_ref = firestore_db.collection(app_site).document(
                     app_location_month
                 )
-            if firestore_doc_ref:
+            if firestore_doc_ref is not None:
                 data = {timestamp: {"t": temperature_f, "rh": humidity}}
                 firestore_doc_ref.set(data, merge=True)
 
